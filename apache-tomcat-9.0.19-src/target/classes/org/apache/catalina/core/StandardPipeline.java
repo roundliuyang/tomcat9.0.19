@@ -348,6 +348,7 @@ public class StandardPipeline extends LifecycleBase implements Pipeline {
         }
 
         // Add this Valve to the set associated with this Pipeline
+        // first valve == null，就设置为第一个
         if (first == null) {
             first = valve;
             valve.setNext(basic);
