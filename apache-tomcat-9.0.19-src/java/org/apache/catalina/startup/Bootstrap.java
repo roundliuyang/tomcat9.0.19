@@ -36,6 +36,9 @@ import org.apache.juli.logging.LogFactory;
 
 
 /**
+ * Catalina 类承接了 Bootstrap 类的 load 和 start 方法，然后根据配置初始化了 Tomcat 的组件，
+ * 并调用了 Server 类的 init 和 start 方法来启动 Tomcat
+ *
  * Bootstrap loader for Catalina.  This application constructs a class loader
  * for use in loading the Catalina internal classes (by accumulating all of the
  * JAR files found in the "server" directory under "catalina.home"), and
@@ -304,6 +307,7 @@ public final class Bootstrap {
 
 
     /**
+     * 加载守护进程
      * Load daemon.
      */
     private void load(String[] arguments)
@@ -326,7 +330,7 @@ public final class Bootstrap {
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled())
             log.debug("Calling startup class " + method);
-        method.invoke(catalinaDaemon, param);
+        method.invoke(catalinaDaemon, param);        // 本质上就是调用catalina的load方法
 
     }
 

@@ -539,6 +539,7 @@ public class Catalina {
      */
     public void load() {
 
+        // 如果已经加载则退出
         if (loaded) {
             return;
         }
@@ -546,8 +547,10 @@ public class Catalina {
 
         long t1 = System.nanoTime();
 
+        // 已经弃用了，Tomcat10会删除这个方法
         initDirs();
 
+        // 设置额外的系统变量
         // Before digester - it may be needed
         initNaming();
 
@@ -581,6 +584,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            // 启动Server
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
@@ -603,7 +607,8 @@ public class Catalina {
     public void load(String args[]) {
 
         try {
-            if (arguments(args)) {
+            if (arguments(args)) {      // 处理命令行的参数
+                // load加载过程本质上是初始化Server的实例
                 load();
             }
         } catch (Exception e) {
@@ -613,6 +618,7 @@ public class Catalina {
 
 
     /**
+     * 整段代码的核心就是 try-catch 里的 getServer().start() 方法了，也就是调用 Server 对象的 start() 方法来启动 Tomcat
      * Start a new server instance.
      */
     public void start() {
@@ -647,6 +653,13 @@ public class Catalina {
         }
 
         // Register shutdown hook
+        /**
+         * 调用完 Server#start 方法之后，注册了一个ShutDownHook，也就是 CatalinaShutdownHook 对象,
+         * CatalinaShutdownHook 的逻辑也简单，就是调用 Catalina 对象的 stop 方法来停止 tomcat。
+         * 看到CatalinaShutdownHook, 这里有必要谈谈JVM的关闭钩子。
+         * 关闭钩子是指通过Runtime.addShutdownHook注册的但尚未开始的线程。这些钩子可以用于实现服务或者应用程序的清理工作，
+         * 例如删除临时文件，或者清除无法由操作系统自动清除的资源。
+         */
         if (useShutdownHook) {
             if (shutdownHook == null) {
                 shutdownHook = new CatalinaShutdownHook();
@@ -663,6 +676,10 @@ public class Catalina {
             }
         }
 
+        /**
+         * 最后就进入 if 语句了，await 是在 Bootstrap 里调用的时候设置为 true 的，也就是本文开头的时候提到的三个方法中的一个。
+         * await 方法的作用是停住主线程，等待用户输入shutdown 命令之后，停止等待，之后 main 线程就调用 stop 方法来停止Tomcat。
+         */
         if (await) {
             await();
             stop();
@@ -671,6 +688,7 @@ public class Catalina {
 
 
     /**
+     * Catalina 的 stop 方法主要逻辑是调用 Server 对象的 stop 方法
      * Stop an existing server instance.
      */
     public void stop() {
