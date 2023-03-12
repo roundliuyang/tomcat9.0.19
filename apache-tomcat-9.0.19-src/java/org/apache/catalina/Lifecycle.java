@@ -18,6 +18,7 @@ package org.apache.catalina;
 
 
 /**
+ * 事件源的接口：在Lifecycle中
  * Common interface for component life cycle methods.  Catalina components
  * may implement this interface (as well as the appropriate interface(s) for
  * the functionality they support) in order to provide a consistent mechanism
@@ -172,6 +173,8 @@ public interface Lifecycle {
 
     // --------------------------------------------------------- Public Methods
 
+
+    /** 第1类：针对监听器 **/
 
     /**
      * 添加监听器

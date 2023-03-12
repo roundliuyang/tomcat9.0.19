@@ -45,6 +45,8 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
     protected MBeanServer mserver = null;
 
     /**
+     * 注册MBean
+     * 这样你就知道这里抽象出的LifecycleBase如下两个方法的用意，就是为了注册和卸载MBean
      * Sub-classes wishing to perform additional initialization should override
      * this method, ensuring that super.initInternal() is the first call in the
      * overriding method.
@@ -62,6 +64,7 @@ public abstract class LifecycleMBeanBase extends LifecycleBase
 
 
     /**
+     * 卸载MBean
      * Sub-classes wishing to perform additional clean-up should override this
      * method, ensuring that super.destroyInternal() is the last call in the
      * overriding method.

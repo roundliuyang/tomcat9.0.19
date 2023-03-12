@@ -19,6 +19,7 @@ package org.apache.catalina;
 import java.util.EventObject;
 
 /**
+ * 监听事件, 由于是lifecycle的监听器，所以它握有一个lifecycle实例
  * General event for notifying listeners of significant changes on a component
  * that implements the Lifecycle interface.
  *
