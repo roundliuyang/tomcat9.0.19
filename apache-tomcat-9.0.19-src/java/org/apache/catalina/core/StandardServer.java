@@ -407,6 +407,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
     }
 
 
+    // 此service中用于各种实用程序任务（包括重复执行的线程）的线程数
     @Override
     public int getUtilityThreads() {
         return utilityThreads;
@@ -414,6 +415,9 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
 
 
     /**
+     * 获取内部进程数计算逻辑：
+     *  > 0时，即utilityThreads的值。
+     *  <=0时，Runtime.getRuntime().availableProcessors() + result...
      * Handles the special values.
      */
     private static int getUtilityThreadsInternal(int utilityThreads) {
@@ -441,7 +445,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
         }
     }
 
-
+    // 线程池
     private synchronized void reconfigureUtilityExecutor(int threads) {
         // The ScheduledThreadPoolExecutor doesn't use MaximumPoolSize, only CorePoolSize is available
         if (utilityExecutor != null) {
@@ -912,6 +916,14 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
 
 
     /**
+     * 方法的第一行代码先触发 CONFIGURE_START_EVENT 事件，以便执行 StandardServer 的 LifecycleListener 监听器，然后调用 setState 方法设置成
+     * LifecycleBase 的 state 属性为 LifecycleState.STARTING。 接着就 globalNamingResources.start()，跟 initInternal 方法其实是类似的。
+     * 再接着就调用 Service 的 start 方法来启动 Service 组件。可以看出，StandardServe 的 startInternal 跟 initInternal 方法类似，都是调用内部的 service 组件的相关方法。
+     * 调用完 service.init 方法后，就使用 getUtilityExecutor() 返回的线程池延迟执行startPeriodicLifecycleEvent 方法，而在 startPeriodicLifecycleEvent 方法里，
+     * 也是使用 getUtilityExecutor() 方法，定期执行 fireLifecycleEvent 方法，处理 Lifecycle.PERIODIC_EVENT 事件，如果有需要定期处理的，可以再 Server 的 LifecycleListener
+     * 里处理 Lifecycle.PERIODIC_EVENT 事件
+     *
+     *
      * Start nested components ({@link Service}s) and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *

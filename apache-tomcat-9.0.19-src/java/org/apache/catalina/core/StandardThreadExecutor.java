@@ -30,6 +30,12 @@ import org.apache.tomcat.util.threads.TaskQueue;
 import org.apache.tomcat.util.threads.TaskThreadFactory;
 import org.apache.tomcat.util.threads.ThreadPoolExecutor;
 
+/**
+ * 这里你是否考虑过一个问题，为什么Tomcat会自己构造一个StandardThreadExecutor而不是直接使用ThreadPoolExecutor？从上面的代码，
+ * 你会发现这里只是使用executor只是使用了execute的两个主要方法，它希望让调用层屏蔽掉ThreadPoolExecutor的其它方法：
+ * 它体现的原则：最少知识原则: 只和你的密友谈话。也就是说客户对象所需要交互的对象应当尽可能少它体现的设计模式：结构型 - 外观(Facade)外观模式(Facade pattern)，
+ * 提供了一个统一的接口，用来访问子系统中的一群接口，从而让子系统更容易使用
+ */
 public class StandardThreadExecutor extends LifecycleMBeanBase
         implements Executor, ResizableExecutor {
 
@@ -111,6 +117,7 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
 
 
     /**
+     * 这个方法中，我们不难看出，就是初始化taskqueue，同时构造ThreadPoolExecutor的实例，后面Tomcat的StandardThreadExecutor的实现本质上通过ThreadPoolExecutor实现的。
      * Start the component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#startInternal()}.
      *
@@ -134,6 +141,7 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
 
 
     /**
+     * 关闭线程池后置null, 方便GC回收
      * Stop the component and implement the requirements
      * of {@link org.apache.catalina.util.LifecycleBase#stopInternal()}.
      *
@@ -168,6 +176,9 @@ public class StandardThreadExecutor extends LifecycleMBeanBase
     }
 
 
+    /**
+     * 本质上就是调用ThreadPoolExecutor的实例的相关方法。
+     */
     @Override
     public void execute(Runnable command) {
         if (executor != null) {

@@ -258,6 +258,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
+     * 当前Service相关的所有Connectors.
      * Find and return the set of Connectors associated with this Service.
      */
     @Override
@@ -267,6 +268,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
 
 
     /**
+     * 删除connector
      * Remove the specified Connector from the set associated from this
      * Service.  The removed Connector will also be disassociated from our
      * Container.
@@ -305,6 +307,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             connectors = results;
 
             // Report this property change to interested listeners
+            // 触发connector属性变更事件
             support.firePropertyChange("connector", connector, null);
         }
     }
@@ -343,7 +346,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
                 executors.add(ex);
                 if (getState().isAvailable()) {
                     try {
-                        ex.start();
+                        ex.start();     // 启动
                     } catch (LifecycleException x) {
                         log.error(sm.getString("standardService.executor.start"), x);
                     }
@@ -393,7 +396,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
         synchronized (executors) {
             if ( executors.remove(ex) && getState().isAvailable() ) {
                 try {
-                    ex.stop();
+                    ex.stop();        // 停止
                 } catch (LifecycleException e) {
                     log.error(sm.getString("standardService.executor.stop"), e);
                 }

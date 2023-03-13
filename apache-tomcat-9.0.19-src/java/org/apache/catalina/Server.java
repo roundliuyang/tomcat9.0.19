@@ -63,7 +63,7 @@ public interface Server extends Lifecycle {
      * @param globalNamingResources The new global naming resources
      */
     public void setGlobalNamingResources
-        (NamingResourcesImpl globalNamingResources);
+    (NamingResourcesImpl globalNamingResources);
 
 
     /**
@@ -74,7 +74,6 @@ public interface Server extends Lifecycle {
 
     /**
      * @return the port number we listen to for shutdown commands.
-     *
      * @see #getPortOffset()
      * @see #getPortWithOffset()
      */
@@ -85,7 +84,6 @@ public interface Server extends Lifecycle {
      * Set the port number we listen to for shutdown commands.
      *
      * @param port The new port number
-     *
      * @see #setPortOffset(int)
      */
     public void setPort(int port);
@@ -207,6 +205,7 @@ public interface Server extends Lifecycle {
 
     /**
      * Get the utility thread count.
+     *
      * @return the thread count
      */
     public int getUtilityThreads();
@@ -214,12 +213,17 @@ public interface Server extends Lifecycle {
 
     /**
      * Set the utility thread count.
+     *
      * @param utilityThreads the new thread count
      */
     public void setUtilityThreads(int utilityThreads);
 
 
     // --------------------------------------------------------- Public Methods
+
+
+    /** Service相关， 包括添加Service， 查找Service，删除service等 **/
+
 
 
     /**
