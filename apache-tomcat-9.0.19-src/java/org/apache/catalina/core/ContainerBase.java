@@ -221,7 +221,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
 
     /**
-     * 由于Container
+     * 由于Container中都有涉及，实现方法肯定是在抽象的实现类中，所以肯定是在ContainerBase中实现。
      * The Pipeline object with which this Container is associated.
      */
     protected final Pipeline pipeline = new StandardPipeline(this);
@@ -1137,6 +1137,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         Valve current = pipeline.getFirst();
         while (current != null) {
             try {
+                // 遍历 pipline 中所有 valve 的 backgroundProcess
                 current.backgroundProcess();
             } catch (Exception e) {
                 log.warn(sm.getString("containerBase.backgroundProcess.valve", current), e);

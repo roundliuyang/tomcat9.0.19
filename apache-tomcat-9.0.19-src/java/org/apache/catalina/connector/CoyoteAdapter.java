@@ -340,7 +340,12 @@ public class CoyoteAdapter implements Adapter {
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
                 // Calling the container
-                // 此处调用 Pipeline Value 的 invoke 方法。（Engine是最顶层容器）
+                /**
+                 * 此处调用 Pipeline Value 的 invoke 方法。（Engine是最顶层容器）
+                 * connector.getService() 获取的是当前 connector 关联的 Service 组件，默认情况下获得的就是org.apache.catalina.core.StandardService的对象。
+                 * 其 getContainer 方法获得的是org.apache.catalina.core.StandardEngine的对象。
+                 *  getPipeline 方法返回的是 StandardEngine 类的父类org.apache.catalina.core.ContainerBase类的成员变量 pipeline
+                 */
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
             }

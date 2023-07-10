@@ -1137,6 +1137,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         Valve current = pipeline.getFirst();
         while (current != null) {
             try {
+                // 遍历 pipline 中所有 valve 的 backgroundProcess
                 current.backgroundProcess();
             } catch (Exception e) {
                 log.warn(sm.getString("containerBase.backgroundProcess.valve", current), e);
