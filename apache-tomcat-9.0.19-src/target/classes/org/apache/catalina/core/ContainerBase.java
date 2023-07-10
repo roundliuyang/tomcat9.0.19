@@ -221,6 +221,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
 
     /**
+     * 由于Container
      * The Pipeline object with which this Container is associated.
      */
     protected final Pipeline pipeline = new StandardPipeline(this);
@@ -1118,6 +1119,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         Cluster cluster = getClusterInternal();
         if (cluster != null) {
             try {
+
                 cluster.backgroundProcess();
             } catch (Exception e) {
                 log.warn(sm.getString("containerBase.backgroundProcess.cluster",

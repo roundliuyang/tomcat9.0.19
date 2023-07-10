@@ -1839,7 +1839,7 @@ public class StandardContext extends ContainerBase
             if (getState().isAvailable() && (oldLoader != null) &&
                 (oldLoader instanceof Lifecycle)) {
                 try {
-                    ((Lifecycle) oldLoader).stop();
+                    ((Lifecycle) oldLoader).stop();         // 旧的加载器停止
                 } catch (LifecycleException e) {
                     log.error(sm.getString("standardContext.setLoader.stop"), e);
                 }
@@ -1851,7 +1851,7 @@ public class StandardContext extends ContainerBase
             if (getState().isAvailable() && (loader != null) &&
                 (loader instanceof Lifecycle)) {
                 try {
-                    ((Lifecycle) loader).start();
+                    ((Lifecycle) loader).start();            // 新的加载器启动
                 } catch (LifecycleException e) {
                     log.error(sm.getString("standardContext.setLoader.start"), e);
                 }

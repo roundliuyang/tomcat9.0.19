@@ -17,6 +17,7 @@
 package org.apache.catalina;
 
 /**
+ * 由于 Pipline 是为容器设计的，所以它在设计时加入了一个 Contained 接口，就是为了指定当前 Pipline 所属的容器
  * <p>Decoupling interface which specifies that an implementing class is
  * associated with at most one <strong>Container</strong> instance.</p>
  *

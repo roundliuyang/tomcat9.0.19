@@ -63,7 +63,9 @@ final class StandardContextValve extends ValveBase {
         throws IOException, ServletException {
 
         // Disallow any direct access to resources under WEB-INF or META-INF
+        // 测试的请求路径【/index.html】
         MessageBytes requestPathMB = request.getRequestPathMB();
+        // 不允许直接访问 WEB-INF or META-INF，在这里判断的
         if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
                 || (requestPathMB.equalsIgnoreCase("/META-INF"))
                 || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
@@ -93,6 +95,7 @@ final class StandardContextValve extends ValveBase {
         if (request.isAsyncSupported()) {
             request.setAsyncSupported(wrapper.getPipeline().isAsyncSupported());
         }
+        // 调用 Wrapper 的 pipeline 处理
         wrapper.getPipeline().getFirst().invoke(request, response);
     }
 }

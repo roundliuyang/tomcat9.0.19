@@ -39,6 +39,7 @@ import java.util.Set;
 public interface Pipeline extends Contained {
 
     /**
+     * 基础的处理阀
      * @return the Valve instance that has been distinguished as the basic
      * Valve for this Pipeline (if any).
      */
@@ -110,6 +111,7 @@ public interface Pipeline extends Contained {
 
 
     /**
+     * 获取第一个节点，遍历的起点，所以需要有这个方法
      * @return the Valve instance that has been distinguished as the basic
      * Valve for this Pipeline (if any).
      */
@@ -117,6 +119,7 @@ public interface Pipeline extends Contained {
 
 
     /**
+     * 是否所有节点（阀门）都支持处理Servlet3 异步处理
      * Returns true if all the valves in this pipeline support async, false otherwise
      * @return true if all the valves in this pipeline support async, false otherwise
      */
@@ -124,6 +127,7 @@ public interface Pipeline extends Contained {
 
 
     /**
+     * 找到所有不支持Servlet3异步处理的阀门
      * Identifies the Valves, if any, in this Pipeline that do not support
      * async.
      *

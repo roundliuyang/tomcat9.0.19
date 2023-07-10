@@ -111,6 +111,7 @@ final class StandardWrapperValve
         }
 
         // Check for the servlet being marked unavailable
+        // 分配 servlet 实例处理此次请求
         if (!unavailable && wrapper.isUnavailable()) {
             container.getLogger().info(sm.getString("standardWrapper.isUnavailable",
                     wrapper.getName()));
@@ -183,6 +184,7 @@ final class StandardWrapperValve
                         if (request.isAsyncDispatching()) {
                             request.getAsyncContextInternal().doInternalDispatch();
                         } else {
+                            // 此处 调用 过滤器方法
                             filterChain.doFilter(request.getRequest(),
                                     response.getResponse());
                         }

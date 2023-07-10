@@ -36,6 +36,9 @@ import org.apache.juli.logging.LogFactory;
 
 
 /**
+ * Catalina 类承接了 Bootstrap 类的 load 和 start 方法，然后根据配置初始化了 Tomcat 的组件，
+ * 并调用了 Server 类的 init 和 start 方法来启动 Tomcat
+ *
  * Bootstrap loader for Catalina.  This application constructs a class loader
  * for use in loading the Catalina internal classes (by accumulating all of the
  * JAR files found in the "server" directory under "catalina.home"), and
@@ -142,14 +145,21 @@ public final class Bootstrap {
     // -------------------------------------------------------- Private Methods
 
 
+    /**
+     * 可以看出，catalinaLoader 和 sharedLoader 的 parentClassLoader 是 commonLoader。
+     */
     private void initClassLoaders() {
         try {
+            // commonLoader 初始化
             commonLoader = createClassLoader("common", null);
             if( commonLoader == null ) {
                 // no config file, default to this loader - we might be in a 'single' env.
                 commonLoader=this.getClass().getClassLoader();
             }
+
+            // catalinaLoader初始化, 父classloader是commonLoader
             catalinaLoader = createClassLoader("server", commonLoader);
+            // sharedLoader初始化
             sharedLoader = createClassLoader("shared", commonLoader);
         } catch (Throwable t) {
             handleThrowable(t);
@@ -158,7 +168,15 @@ public final class Bootstrap {
         }
     }
 
-
+    /**
+     * 方法的逻辑也比较简单就是从 catalina.property文件里找 common.loader, shared.loader, server.loader 对应的值，然后构造成Repository 列表，
+     * 再将Repository 列表传入ClassLoaderFactory.createClassLoader 方法，ClassLoaderFactory.createClassLoader 返回的是 URLClassLoader，
+     * 而Repository 列表就是这个URLClassLoader 可以加在的类的路径。 在catalina.property文件里
+     *  common.loader="${catalina.base}/lib","${catalina.base}/lib/*.jar","${catalina.home}/lib","${catalina.home}/lib/*.jar"
+     *  server.loader=
+     *  shared.loader=
+     *  其中 shared.loader, server.loader 是没有值的，createClassLoader 方法里如果没有值的话，就返回传入的 parent ClassLoader，也就是说，commonLoader,catalinaLoader,sharedLoader 其实是一个对象。在Tomcat之前的版本里，这三个是不同的URLClassLoader对象。
+     */
     private ClassLoader createClassLoader(String name, ClassLoader parent)
         throws Exception {
 
@@ -246,20 +264,28 @@ public final class Bootstrap {
 
 
     /**
+     * 初始化守护进程
      * Initialize daemon.
      * @throws Exception Fatal initialization error
      */
     public void init() throws Exception {
 
+        // 初始化classloader（包括catalinaLoader），下文将具体分析
         initClassLoaders();
 
+        // 设置当前的线程的contextClassLoader为catalinaLoader
         Thread.currentThread().setContextClassLoader(catalinaLoader);
 
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
+        // 通过反射调用了setParentClassLoader 方法
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        /**
+         * 初始化完三个ClassLoader对象后，init() 方法就使用 catalinaClassLoader 加载了org.apache.catalina.startup.Catalina 类，并创建了一个对象，
+         * 然后通过反射调用这个对象的 setParentClassLoader 方法，传入的参数是 sharedClassLoader。最后吧这个 Catania 对象复制给 catalinaDaemon 属性
+         */
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -281,6 +307,7 @@ public final class Bootstrap {
 
 
     /**
+     * 加载守护进程
      * Load daemon.
      */
     private void load(String[] arguments)
@@ -303,7 +330,7 @@ public final class Bootstrap {
             catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled())
             log.debug("Calling startup class " + method);
-        method.invoke(catalinaDaemon, param);
+        method.invoke(catalinaDaemon, param);        // 本质上就是调用catalina的load方法
 
     }
 
@@ -452,7 +479,7 @@ public final class Bootstrap {
      * @param args Command line arguments to be processed
      */
     public static void main(String args[]) {
-
+        // 创建一个 Bootstrap 对象，调用它的 init 方法初始化
         synchronized (daemonLock) {
             if (daemon == null) {
                 // Don't set daemon until init() has completed
@@ -472,14 +499,14 @@ public final class Bootstrap {
                 Thread.currentThread().setContextClassLoader(daemon.catalinaLoader);
             }
         }
-
+        // 根据启动参数，分别调用 Bootstrap 对象的不同方法
         try {
             String command = "start";
             if (args.length > 0) {
                 command = args[args.length - 1];
             }
 
-            if (command.equals("startd")) {
+            if (command.equals("startd")) {     // 默认是start
                 args[args.length - 1] = "start";
                 daemon.load(args);
                 daemon.start();

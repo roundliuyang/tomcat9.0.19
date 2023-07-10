@@ -461,10 +461,12 @@ public class StandardPipeline extends LifecycleBase implements Pipeline {
 
     @Override
     public Valve getFirst() {
+        // 如果有注册Valve，就返回
         if (first != null) {
             return first;
         }
 
+        // 返回注册的 BasicValve
         return basic;
     }
 }

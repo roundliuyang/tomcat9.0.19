@@ -18,6 +18,7 @@ package org.apache.catalina;
 
 
 /**
+ * 事件源的接口：在Lifecycle中
  * Common interface for component life cycle methods.  Catalina components
  * may implement this interface (as well as the appropriate interface(s) for
  * the functionality they support) in order to provide a consistent mechanism
@@ -173,7 +174,10 @@ public interface Lifecycle {
     // --------------------------------------------------------- Public Methods
 
 
+    /** 第1类：针对监听器 **/
+
     /**
+     * 添加监听器
      * Add a LifecycleEvent listener to this component.
      *
      * @param listener The listener to add
@@ -182,6 +186,7 @@ public interface Lifecycle {
 
 
     /**
+     * 获取所有监听器
      * Get the life cycle listeners associated with this life cycle.
      *
      * @return An array containing the life cycle listeners associated with this
@@ -192,6 +197,7 @@ public interface Lifecycle {
 
 
     /**
+     * 移除某个监听器
      * Remove a LifecycleEvent listener from this component.
      *
      * @param listener The listener to remove
@@ -200,6 +206,7 @@ public interface Lifecycle {
 
 
     /**
+     * 初始化方法
      * Prepare the component for starting. This method should perform any
      * initialization required post object creation. The following
      * {@link LifecycleEvent}s will be fired in the following order:
@@ -214,6 +221,7 @@ public interface Lifecycle {
     public void init() throws LifecycleException;
 
     /**
+     * 启动方法
      * Prepare for the beginning of active use of the public methods other than
      * property getters/setters and life cycle methods of this component. This
      * method should be called before any of the public methods other than
@@ -243,6 +251,7 @@ public interface Lifecycle {
 
 
     /**
+     * 停止方法，和start对应
      * Gracefully terminate the active use of the public methods other than
      * property getters/setters and life cycle methods of this component. Once
      * the STOP_EVENT is fired, the public methods other than property
@@ -276,6 +285,7 @@ public interface Lifecycle {
     public void stop() throws LifecycleException;
 
     /**
+     * 销毁方法，和init对应
      * Prepare to discard the object. The following {@link LifecycleEvent}s will
      * be fired in the following order:
      * <ol>
@@ -290,6 +300,7 @@ public interface Lifecycle {
 
 
     /**
+     *  获取生命周期状态
      * Obtain the current state of the source component.
      *
      * @return The current state of the source component.
@@ -298,6 +309,7 @@ public interface Lifecycle {
 
 
     /**
+     * 获取字符串类型的生命周期状态
      * Obtain a textual representation of the current component state. Useful
      * for JMX. The format of this string may vary between point releases and
      * should not be relied upon to determine component state. To determine
